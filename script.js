@@ -1,5 +1,9 @@
 // first API call to currentWeather responses
 
+var longitude;
+
+var latitude;
+
 // maximum 7 days
 var forecastDayTarget = 5;
 
@@ -32,72 +36,120 @@ var createURL2 = (latitude, longitude) => {
   );
 };
 
-console.log("Debug");
-const oneAPICall = (latitude, longitude) => {
-  $.ajax({
-    url: createURL2(latitude, longitude),
-    method: "GET",
-  }).then(function (response) {
-    // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
-    var uvIndex = response.current.uvi;
-    // daily weather in SECOND api call -
-    var weatherDaily = response.daily;
-    console.log("UV Index", uvIndex);
-
-    // console.log(weatherDaily[0].dt);
-    // console.log(weatherDaily[1].dt);
-    // console.log(weatherDaily[2].dt);
-    // console.log(weatherDaily[3].dt);
-    // console.log(weatherDaily[4].dt);
-
-    dailyForecastRetrieval(weatherDaily);
-  });
+// bestpractice
+//
+const initiate = async (event) => {
+  event.preventDefault();
+  savePreviousCity($("#searchInput").val().trim().toLowerCase());
+  try {
+    const coordinates = await searchCallToAPI();
+    const forecastData = await oneAPICall();
+    dailyForecastRetrieval(forecastData.weatherDaily);
+  } catch (error) {
+    console.log(error);
+    if (error.statusCode === 404) {
+      alert("Please try again");
+    }
+  }
 };
 
-const searchCallToAPI = () => {
-  console.log("words?");
-  var cityInput = $("#searchInput").val().trim();
-  $.ajax({
-    url: currentWeatherURL(cityInput),
-    method: "GET",
-  }).then((response) => {
-    console.log(response);
+// data can only be access from the previous function
+// the called function is a promise - THEN it return another promise
+// promises are asynchronous functions that need to be handled in a special manner
+// here (below) (with the help of tw0v) i have got a chain of THENables (due to the promise)
 
-    var weatherStats = response.main;
-    var cityName = response.name;
-    // in Kelvin - (toggle F<>C)
-    var weatherStats = response.main;
-    var currentWeatherTemp = weatherStats.temp;
-    var weatherHumidity = weatherStats.humidity;
-    // root ARRAY
-    var weatherCall = response.weather;
+// const initiate = (event) => {
+//   event.preventDefault();
 
-    // (.png)
-    var weatherIconVal = weatherCall[0].icon;
+//   searchCallToAPI()
+//     .then(function (coordinates) {
+//       return oneAPICall();
+//     })
+//     .then(function (forecastData) {
+//       dailyForecastRetrieval(forecastData.weatherDaily);
+//     })
+//     .catch(function (e) {
+//       //do error message alert
+//     });
+// };
 
-    // access coords
-    var weatherCoord = response.coord;
+// const promiseExample = () => {
 
-    var longitude = weatherCoord.lon;
+//     return $.ajax({
+//         url: createURL2(latitude, longitude),
+//         method: "GET",
+//       }).then(function (response) {
+//         // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
+//         var uvIndex = response.current.uvi;
+//         // daily weather in SECOND api call -
+//         var weatherDaily = response.daily;
+//         console.log("UV Index", uvIndex);
 
-    var latitude = weatherCoord.lat;
+//         return {weatherDaily, uvIndex}
+//       });
 
-    // open wind obj
-    var weatherWind = response.wind;
-    // windspeed in (mph? or kph?)
-    var weatherWindSpeed = weatherWind.speed;
+// };
 
-    console.log("CurrentTemp", currentWeatherTemp);
-    console.log("Humidity", weatherHumidity);
-    console.log("Wind Speed", weatherWindSpeed);
-    console.log("Longitude", longitude);
-    console.log("Latitude", latitude);
-    console.log("City", cityName);
+const oneAPICall = () =>
+  new Promise((resolve, reject) => {
+    $.ajax({
+      url: createURL2(latitude, longitude),
+      method: "GET",
+    }).then(function (response) {
+      // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
+      var uvIndex = response.current.uvi;
+      // daily weather in SECOND api call -
+      var weatherDaily = response.daily;
+      console.log("UV Index", uvIndex);
 
-    oneAPICall(latitude, longitude);
-    $("#searchInput").val("");
+      resolve({ weatherDaily, uvIndex });
+    });
   });
-};
+
+const searchCallToAPI = () =>
+  new Promise((resolve, reject) => {
+    // event.preventDefault();
+    var cityInput = $("#searchInput").val().trim().toLowerCase();
+    $.ajax({
+      url: currentWeatherURL(cityInput),
+      method: "GET",
+    }).then((response) => {
+      var weatherStats = response.main;
+      var cityName = response.name;
+      // in Kelvin - (toggle F<>C)
+      var weatherStats = response.main;
+      var currentWeatherTemp = weatherStats.temp;
+      var weatherHumidity = weatherStats.humidity;
+      // root ARRAY
+      var weatherCall = response.weather;
+
+      // (.png)
+      var weatherIconVal = weatherCall[0].icon;
+
+      // access coords
+      var weatherCoord = response.coord;
+
+      longitude = weatherCoord.lon;
+
+      latitude = weatherCoord.lat;
+
+      // open wind obj
+      var weatherWind = response.wind;
+      // windspeed in (mph? or kph?)
+      var weatherWindSpeed = weatherWind.speed;
+
+      console.log("CurrentTemp", currentWeatherTemp);
+      console.log("Humidity", weatherHumidity);
+      console.log("Wind Speed", weatherWindSpeed);
+      console.log("Longitude", longitude);
+      console.log("Latitude", latitude);
+      console.log("City", cityName);
+
+      // oneAPICall(latitude, longitude);
+      $("#searchInput").val("");
+      resolve({ longitude, latitude });
+    });
+  });
 
 const dailyForecastRetrieval = (weatherDaily) => {
   for (i = 0; i < forecastDayTarget; i++) {
@@ -114,10 +166,64 @@ const dailyForecastRetrieval = (weatherDaily) => {
   }
 };
 
+const getFromLocalstorage = () => {
+  var previousCitiesStringified = localStorage.getItem("previousCities");
+  var previousCities = JSON.parse(previousCitiesStringified);
+
+  if (previousCities == null) {
+    return {};
+  }
+  return previousCities;
+};
+
 const populateSingleCityData = (city, savedCity) => {
   var nowMoment = moment();
 };
 
-const savePreviousCity = () => {};
+const savePreviousCity = (cityName) => {
+  if (!cityName) {
+    return;
+  }
+  const previousCities = getFromLocalstorage();
+  localStorage.setItem(
+    "previousCities",
+    JSON.stringify({ ...previousCities, [cityName]: 1 })
+  );
+};
 
-$("#search").click(searchCallToAPI);
+const createPreviousCityList = (previousCities) => {
+  $("#saved-cities").empty();
+
+  var cityKeys = Object.keys(previousCities);
+  for (i = 0; i < cityKeys.length; i++) {
+    var cityEntries = $("<button>");
+    cityEntries.addClass("list-group list-group-item list-group-item-action");
+
+    var stringSplit = cityKeys[i].toLowerCase().split(" ");
+    for (j = 0; j < stringSplit.length; j++) {
+      stringSplit[j] =
+        stringSplit[j].charAt(0).toUpperCase() + stringSplit[j].substring(1);
+    }
+    var titleUppercaseCity = stringSplit.join(" ");
+    cityEntries.text(titleUppercaseCity);
+
+    $("#saved-cities").append(cityEntries);
+  }
+};
+
+$(document).ready(function () {
+  let previousCities = getFromLocalstorage();
+  createPreviousCityList(previousCities);
+});
+
+// $("#current-weather").addClass(".hide");
+// $("#5dayforecast").addClass(".hide");
+
+// $("#city-list").click((event)=>{
+//     event.preventDefault();
+//     var city = $(this).text();
+
+// });
+
+// this function - will INITIATE the API calls
+$("#search").click(initiate);
