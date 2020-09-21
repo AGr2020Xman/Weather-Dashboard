@@ -43,17 +43,20 @@ const oneAPICall = (latitude, longitude) => {
     // daily weather in SECOND api call -
     var weatherDaily = response.daily;
     console.log("UV Index", uvIndex);
-    console.log(weatherDaily[0].dt);
-    console.log(weatherDaily[1].dt);
-    console.log(weatherDaily[2].dt);
-    console.log(weatherDaily[3].dt);
-    console.log(weatherDaily[4].dt);
+
+    // console.log(weatherDaily[0].dt);
+    // console.log(weatherDaily[1].dt);
+    // console.log(weatherDaily[2].dt);
+    // console.log(weatherDaily[3].dt);
+    // console.log(weatherDaily[4].dt);
+
+    dailyForecastRetrieval(weatherDaily);
   });
 };
 
 const searchCallToAPI = () => {
   console.log("words?");
-  var cityInput = $("#searchInput").val();
+  var cityInput = $("#searchInput").val().trim();
   $.ajax({
     url: currentWeatherURL(cityInput),
     method: "GET",
@@ -92,10 +95,11 @@ const searchCallToAPI = () => {
     console.log("City", cityName);
 
     oneAPICall(latitude, longitude);
+    $("#searchInput").val("");
   });
 };
 
-const dailyForecastRetrieval = () => {
+const dailyForecastRetrieval = (weatherDaily) => {
   for (i = 0; i < forecastDayTarget; i++) {
     // daily main temp
     var dailyTemp = weatherDaily[i].temp.day;
@@ -107,13 +111,13 @@ const dailyForecastRetrieval = () => {
     console.log(dailyTemp);
     console.log(dailyHumidity);
     console.log("iconCode", dailyWeatherIcon);
-    console.log(uvIndex);
   }
 };
 
-const populateCityData = (city, savedCity) => {
-  searchCallToAPI(response);
+const populateSingleCityData = (city, savedCity) => {
   var nowMoment = moment();
 };
+
+const savePreviousCity = () => {};
 
 $("#search").click(searchCallToAPI);
