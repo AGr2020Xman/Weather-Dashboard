@@ -208,14 +208,12 @@ const createPreviousCityList = (previousCities) => {
     var titleUppercaseCity = stringSplit.join(" ");
     cityEntries.text(titleUppercaseCity);
 
-    $("#saved-cities").append(cityEntries);
-  }
-  cityEntries.each(function () {
-    $(this).on("click", function (event) {
+    cityEntries.on("click", function (event) {
       initiate(event);
     });
-    // gives the button text ~ *cityName* ~ userInput
-  });
+    $("#saved-cities").append(cityEntries);
+  }
+  // gives the button text ~ *cityName* ~ userInput
 };
 // re-render + fetchlist
 const createForecastEl = () => {};
