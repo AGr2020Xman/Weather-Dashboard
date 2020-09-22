@@ -6,6 +6,7 @@
     <title>Weather Dashboard</title>
     <!-- we need: AJAX, FONTAWESOME, BOOTSTRAP>RELATED JS and JSPOPPER, JQUERY  -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="./styles.css">
   </head>
 
   <body>
@@ -13,20 +14,41 @@
     </nav>
     <div class="container">
       <section class="row">
-      </section>
-      <section>
-
+      <section class="col-md-6">
         <aside>
           <section id="saved-cities"></section>
+          <form>
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="unit-switch">
+              <label class="custom-control-label" for="unit-switch">Toggle for Farenheit <span class="attention">(Default Celsius)</span></label>
+            </div>
+            <input id="searchInput" type="user_input"></input>
+          </form>
         </aside>
-        <form>
-          <input id="searchInput" type="user_input">
-        </input>
-      </form>
-    </section>
-    <button role="submit" id="search">Search</button>
-    <section>
-    </section>
+        <button role="submit" id="search">Search</button>
+      </section>
+      <section class="col-md-6">
+        <div id="singleDayWeather">
+          <!-- <h1>City Name (DD/MM/YYYY)<i>IconImage</i></h1>
+          <p class="details">Temperature: <span class=temperature-text>Value</span></p>
+          <p class="details">Wind Speed: <span class=wind-text>Value</span></p>
+          <p class="details">Humidity: <span class=humidity-text>Value</span></p>
+          <p class="details">UV Index: <span class=uv-text>Value</span></p> -->
+        </div>
+      </section>
+      </section>
+      <section class="row">
+        <section class="col-md-12">
+          <section id="5dayForecast">
+            <!-- <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div> -->
+          </section>
+        </section>
+
+      </section>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>

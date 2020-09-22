@@ -8,17 +8,28 @@ var latitude;
 var forecastDayTarget = 5;
 
 const ApiKey = "3ff9623f9027960becbeadb447702b80";
+const weatherIconURL = "http://openweathermap.org/img/wn/";
 
 // <<< Celsius || Farhenheit >>>
 // if toggle = true >> + "&units=imperial"
 
 // else if toggle = false >> + "&units=metric"
 
+var toggleReturnedUnits = () => {
+  var celsius = "&units=metric";
+  var farenheit = "&units=imperial";
+  if ($("#unit-switch")) {
+    return farenheit;
+  } else if ($("#unit-switch")) {
+    return celsius;
+  }
+};
+
 var currentWeatherURL = (cityInput) => {
   return (
     "https://api.openweathermap.org/data/2.5/weather?q=" +
     cityInput +
-    // &units=metric || &units=imperial
+    // toggleReturnedUnits() +
     "&appid=" +
     ApiKey
   );
@@ -30,7 +41,7 @@ var createURL2 = (latitude, longitude) => {
     latitude +
     "&lon=" +
     longitude +
-    // &units=metric || &units=imperial
+    // toggleReturnedUnits() +
     "&appid=" +
     ApiKey
   );
@@ -100,15 +111,17 @@ const oneAPICall = () =>
     $.ajax({
       url: createURL2(latitude, longitude),
       method: "GET",
-    }).then(function (response) {
-      // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
-      var uvIndex = response.current.uvi;
-      // daily weather in SECOND api call -
-      var weatherDaily = response.daily;
-      console.log("UV Index", uvIndex);
+    })
+      .then(function (response) {
+        // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
+        var uvIndex = response.current.uvi;
+        // daily weather in SECOND api call -
+        var weatherDaily = response.daily;
+        console.log("UV Index", uvIndex);
 
-      resolve({ weatherDaily, uvIndex });
-    });
+        resolve({ weatherDaily, uvIndex });
+      })
+      .then();
   });
 
 const searchCallToAPI = () =>
@@ -154,35 +167,17 @@ const searchCallToAPI = () =>
     });
   });
 
-const dailyForecastRetrieval = (weatherDaily) => {
-  for (i = 0; i < forecastDayTarget; i++) {
-    // daily main temp
-    var dailyTemp = weatherDaily[i].temp.day;
-    // daily main humidity
-    var dailyHumidity = weatherDaily[i].humidity;
-    // daily main weather icon
-    var dailyWeatherIcon = weatherDaily[i].icon;
-
-    console.log(dailyTemp);
-    console.log(dailyHumidity);
-    console.log("iconCode", dailyWeatherIcon);
-  }
-};
-
 const getFromLocalstorage = () => {
   var previousCitiesStringified = localStorage.getItem("previousCities");
   var previousCities = JSON.parse(previousCitiesStringified);
-  var cityKeys = Object.keys(previousCities);
   if (previousCities == null) {
     return {};
-  } else if (cityKeys.length >= 10) {
+  }
+  var cityKeys = Object.keys(previousCities);
+  if (cityKeys.length > 10) {
     delete previousCities[cityKeys[0]];
   }
   return previousCities;
-};
-
-const populateSingleCityData = (city, savedCity) => {
-  var nowMoment = moment();
 };
 
 const savePreviousCity = (cityName) => {
@@ -190,10 +185,9 @@ const savePreviousCity = (cityName) => {
     return;
   }
   const previousCities = getFromLocalstorage();
-  localStorage.setItem(
-    "previousCities",
-    JSON.stringify({ ...previousCities, [cityName]: 1 })
-  );
+  const updatedCities = { ...previousCities, [cityName]: 1 };
+  localStorage.setItem("previousCities", JSON.stringify(updatedCities));
+  createPreviousCityList(updatedCities);
 };
 
 const createPreviousCityList = (previousCities) => {
@@ -202,7 +196,9 @@ const createPreviousCityList = (previousCities) => {
   var cityKeys = Object.keys(previousCities);
   for (i = 0; i < cityKeys.length; i++) {
     var cityEntries = $("<button>");
-    cityEntries.addClass("list-group list-group-item list-group-item-action");
+    cityEntries.addClass(
+      "list-group list-group-item list-group-item-action savedButtons"
+    );
 
     var stringSplit = cityKeys[i].toLowerCase().split(" ");
     for (j = 0; j < stringSplit.length; j++) {
@@ -211,9 +207,76 @@ const createPreviousCityList = (previousCities) => {
     }
     var titleUppercaseCity = stringSplit.join(" ");
     cityEntries.text(titleUppercaseCity);
-
+    // createSingleCityEl();
+    cityEntries.each(function () {});
     $("#saved-cities").append(cityEntries);
   }
+};
+// re-render + fetchlist
+const createForecastEl = () => {};
+
+const createSingleCityEl = () => {
+  $("#singleDayWeather").html();
+};
+
+const renderUV = () => {};
+
+const dailyForecastRetrieval = (weatherDaily) => {
+  for (i = 0; i < forecastDayTarget; i++) {
+    // daily main max
+    let tempMax = weatherDaily[i].temp.max;
+    // daily main min
+    let tempMin = weatherDaily[i].temp.min;
+    // daily main humidity
+    let dailyHumidity = weatherDaily[i].humidity;
+    // daily main weather icon
+    let dailyWeatherIcon = weatherDaily[i].weather[0].icon;
+    // weatherIcon URL
+    let weatherIconImg = weatherIconURL + dailyWeatherIcon + ".png";
+    // forecast date
+    let dailyDates = weatherDaily[i].dt;
+    // format the date
+    let formattedDates = new Date(dailyDates * 1000).toLocaleDateString(
+      "en-AU"
+    );
+
+    $("#daily" + i + "date").text(formattedDates);
+    $("#daily" + i + "image").attr("src", weatherIconImg);
+    $("#daily" + i + "tempMax").text(
+      "Max. Temp: " + tempMax + "degrees F or C"
+    );
+    $("#daily" + i + "tempMin").text(
+      "Min. Temp: " + tempMin + "degrees F or C"
+    );
+    $("#daily" + i + "humidity").text(dailyHumidity);
+    $("#daily" + i + "humidity").each(function () {
+      if (0 <= uvIndex < 3) {
+        $(this).addClass("lowUV");
+      } else if (3 <= uvIndex < 6) {
+        $(this).addClass("medUV");
+      } else if (6 <= uvIndex < 8) {
+        $(this).addClass("highUV");
+      } else if (8 <= uvIndex < 11) {
+        $(this).addClass("veryhighUV");
+      } else {
+        $(this).addClass("extremeUV");
+      }
+    });
+
+    // console.log(tempMax);
+    // console.log(tempMin);
+    // console.log(dailyHumidity);
+    // console.log(weatherDaily[i]);
+    // console.log(weatherDaily[i].weather[0]);
+    // console.log(weatherDaily[i].weather[0].icon);
+    // console.log("iconURL", weatherIconImg);
+  }
+};
+
+const populateForecastEl = () => {};
+
+const populateSingleCityData = () => {
+  var nowMoment = moment();
 };
 
 // $("#current-weather").addClass(".hide");
