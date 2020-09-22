@@ -208,7 +208,11 @@ const createPreviousCityList = (previousCities) => {
     var titleUppercaseCity = stringSplit.join(" ");
     cityEntries.text(titleUppercaseCity);
     // createSingleCityEl();
-    cityEntries.each(function () {});
+    cityEntries.each(function () {
+      $(this).on("click", initiate($(this).text()));
+      // gives the button text ~ *cityName* ~ userInput
+      console.log($(this).text());
+    });
     $("#saved-cities").append(cityEntries);
   }
 };
