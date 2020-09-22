@@ -210,10 +210,11 @@ const createPreviousCityList = (previousCities) => {
 
     $("#saved-cities").append(cityEntries);
   }
-  $(this).each(function () {
+  cityEntries.each(function () {
     $(this).on("click", function (event) {
       initiate(event);
     });
+    // gives the button text ~ *cityName* ~ userInput
   });
 };
 // re-render + fetchlist
