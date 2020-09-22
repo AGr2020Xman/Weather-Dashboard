@@ -209,6 +209,7 @@ const createPreviousCityList = (previousCities) => {
     cityEntries.text(titleUppercaseCity);
 
     cityEntries.on("click", function (event) {
+      $("#searchInput").val($(this).text());
       initiate(event);
     });
     $("#saved-cities").append(cityEntries);
@@ -293,3 +294,23 @@ const populateSingleCityData = () => {
 
 // this function - will INITIATE the API calls
 $("#search").click(initiate);
+
+// Another option which does away with the async/await and subscribes
+// more the the single responsibility behaviours that I like. Creates
+// the need for a bit more daisy chaining however I think.
+
+// function searchCityAPI(city){
+//   //ajax call here and the rest of the code
+//   }
+
+//   $(#search).on("click", function(){
+//   var cityInput = $("#searchInput").val().trim().toLowerCase();
+//   searchCityAPI(cityInput)
+
+//   })
+
+//   $(".buttonHistory").on("click", function(){
+//   var cityInput = $(this).text()
+//   searchCityAPI(cityInput)
+
+//   })
