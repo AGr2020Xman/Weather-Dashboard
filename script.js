@@ -53,6 +53,11 @@ const initiate = async (event) => {
   }
 };
 
+$(document).ready(function () {
+  let previousCities = getFromLocalstorage();
+  createPreviousCityList(previousCities);
+});
+
 // data can only be access from the previous function
 // the called function is a promise - THEN it return another promise
 // promises are asynchronous functions that need to be handled in a special manner
@@ -108,7 +113,6 @@ const oneAPICall = () =>
 
 const searchCallToAPI = () =>
   new Promise((resolve, reject) => {
-    // event.preventDefault();
     var cityInput = $("#searchInput").val().trim().toLowerCase();
     $.ajax({
       url: currentWeatherURL(cityInput),
@@ -145,7 +149,6 @@ const searchCallToAPI = () =>
       console.log("Latitude", latitude);
       console.log("City", cityName);
 
-      // oneAPICall(latitude, longitude);
       $("#searchInput").val("");
       resolve({ longitude, latitude });
     });
@@ -169,9 +172,11 @@ const dailyForecastRetrieval = (weatherDaily) => {
 const getFromLocalstorage = () => {
   var previousCitiesStringified = localStorage.getItem("previousCities");
   var previousCities = JSON.parse(previousCitiesStringified);
-
+  var cityKeys = Object.keys(previousCities);
   if (previousCities == null) {
     return {};
+  } else if (cityKeys.length >= 10) {
+    delete previousCities[cityKeys[0]];
   }
   return previousCities;
 };
@@ -210,11 +215,6 @@ const createPreviousCityList = (previousCities) => {
     $("#saved-cities").append(cityEntries);
   }
 };
-
-$(document).ready(function () {
-  let previousCities = getFromLocalstorage();
-  createPreviousCityList(previousCities);
-});
 
 // $("#current-weather").addClass(".hide");
 // $("#5dayforecast").addClass(".hide");
