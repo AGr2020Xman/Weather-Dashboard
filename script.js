@@ -51,12 +51,14 @@ let createURL2 = (latitude, longitude) => {
 //
 const initiate = async (event) => {
   event.preventDefault();
-  savePreviousCitySearch($("#searchInput").val().trim().toLowerCase());
   try {
     const currentData = await searchCallToAPI();
+    console.log(currentData);
+    savePreviousCitySearch($("#searchInput").val().trim().toLowerCase());
+    $("#searchInput").val("");
     const forecastData = await oneAPICall();
     // saveLastDisplayedWeather();
-    createSingleCityEl(
+    renderCurrentCityEl(
       currentData.cityName,
       currentData.rawDateVal,
       currentData.weatherIconVal,
@@ -186,7 +188,6 @@ const searchCallToAPI = () =>
 
       let rawDateVal = response.dt;
 
-      $("#searchInput").val("");
       resolve({
         longitude,
         latitude,
@@ -212,7 +213,7 @@ const retriveLastDisplayWeather = () => {
   if (lastDisplay == null) {
     return {};
   }
-  createSingleCityEl();
+  renderCurrentCityEl();
   dailyForecastRetrieval();
 };
 
@@ -266,7 +267,7 @@ const createPreviousCityList = (previousCities) => {
   }
 };
 
-const createSingleCityEl = (
+const renderCurrentCityEl = (
   cityName,
   rawDateVal,
   weatherIconVal,
@@ -288,12 +289,17 @@ const createSingleCityEl = (
   let temperatureText = $(".temperature-text");
   let windText = $(".wind-text");
   let humidityText = $(".humidity-text");
-  let uvText = $(".uv-text");
 
   temperatureText.text(currentWeatherTemp);
   windText.text(weatherWindSpeed);
   humidityText.text(weatherHumidity);
+  renderUV(uvIndex);
+};
 
+const renderUV = (uvIndex) => {
+  let uvText = $(".uv-text");
+  valueInt = parseInt(uvIndex);
+  console.log(uvIndex);
   uvText.text(uvIndex);
   if (0 <= uvIndex < 3) {
     uvText.addClass("lowUV");
