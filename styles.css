@@ -41,3 +41,16 @@
     font-weight: bold;
     padding: 3px;
 }
+
+.card {
+    max-width: 20rem;
+    margin: 5px;
+}
+
+.card-body {
+    background-color: lightpink;
+}
+
+.jumbotron {
+    margin-top: 5px;
+}
