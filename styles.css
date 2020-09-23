@@ -10,7 +10,7 @@ body {
     /* stay clear of navbar */
     z-index: 100;
     /* extra height push behind nav */
-    height: 75vw;
+    height: 100%;
     padding-left: 15px;
     padding-right: 15px;
 }
