@@ -8,6 +8,17 @@
     left: 0;
     padding: 48px 0 0;
     /* stay clear of navbar */
+    z-index: 100;
+    /* extra height push behind nav */
+}
+
+.sidebar-sticky {
+    position: relative;
+    overflow-x: hidden;
+    /* don't show overflow on X - shouldn't happen anyway || y is auto to allow scrolling on mobile viewports*/
+    overflow-y: auto;
+    top: 0;
+    padding-top: 62.5%;
 }
 
 .lowUV {
