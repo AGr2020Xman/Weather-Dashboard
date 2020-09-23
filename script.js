@@ -1,9 +1,5 @@
 // first API call to currentWeather responses
 
-let longitude;
-
-let latitude;
-
 // maximum 7 days
 let forecastDayTarget = 5;
 
@@ -49,24 +45,18 @@ let createURL2 = (latitude, longitude) => {
 
 // bestpractice
 //
-const initiate = async (event) => {
-  event.preventDefault();
+const searchCityWeatherAPI = async (searchName) => {
+  searchName = searchName.toLowerCase().trim();
   try {
-    const currentData = await searchCallToAPI();
-    console.log(currentData);
-    savePreviousCitySearch($("#searchInput").val().trim().toLowerCase());
-    $("#searchInput").val("");
-    const forecastData = await oneAPICall();
-    // saveLastDisplayedWeather();
-    renderCurrentCityEl(
-      currentData.cityName,
-      currentData.rawDateVal,
-      currentData.weatherIconVal,
-      currentData.currentWeatherTemp,
-      currentData.weatherWindSpeed,
-      currentData.weatherHumidity,
-      forecastData.uvIndex
+    const currentData = await searchCallToAPI(searchName);
+    savePreviousCitySearch(searchName);
+    saveSelectedCityState(searchName);
+    const forecastData = await oneAPICall(
+      currentData.latitude,
+      currentData.longitude
     );
+    // saveLastDisplayedWeather();
+    renderCurrentCityEl(currentData, forecastData.uvIndex);
     dailyForecastRetrieval(forecastData.weatherDaily);
   } catch (error) {
     console.log(error);
@@ -76,9 +66,20 @@ const initiate = async (event) => {
   }
 };
 
+const searchCityButton = (event) => {
+  event.preventDefault();
+  let searchName = $("#searchInput").val().trim().toLowerCase();
+  // $("#searchInput").val("");
+  searchCityWeatherAPI(searchName);
+};
+
 $(document).ready(function () {
   let previousCities = getFromLocalstorage();
   createPreviousCityList(previousCities);
+  let lastSearchedCity = Object.keys(previousCities).pop();
+  if (typeof lastSearchedCity !== "undefined") {
+    searchCityWeatherAPI(lastSearchedCity);
+  }
   // retriveLastDisplayWeather();
 });
 
@@ -119,7 +120,7 @@ $(document).ready(function () {
 
 // };
 
-const oneAPICall = () =>
+const oneAPICall = (latitude, longitude) =>
   new Promise((resolve, reject) => {
     $.ajax({
       url: createURL2(latitude, longitude),
@@ -146,9 +147,9 @@ const oneAPICall = () =>
       .then();
   });
 
-const searchCallToAPI = () =>
+const searchCallToAPI = (cityInput) =>
   new Promise((resolve, reject) => {
-    let cityInput = $("#searchInput").val().trim().toLowerCase();
+    // let cityInput = $("#searchInput").val().trim().toLowerCase();
     $.ajax({
       url: currentWeatherURL(cityInput),
       method: "GET",
@@ -177,9 +178,9 @@ const searchCallToAPI = () =>
       // access coords
       let weatherCoord = response.coord;
 
-      longitude = weatherCoord.lon;
+      let longitude = weatherCoord.lon;
 
-      latitude = weatherCoord.lat;
+      let latitude = weatherCoord.lat;
 
       // open wind obj
       let weatherWind = response.wind;
@@ -201,21 +202,21 @@ const searchCallToAPI = () =>
     });
   });
 
-const saveLastDisplayedWeather = () => {
-  const lastDisplay = retriveLastDisplayWeather();
-  localStorage.setItem("lastDisplay", JSON.stringify({}));
-  localStorage.setItem("lastDisplay", JSON.stringify(lastDisplay));
-};
+// const saveLastDisplayedWeather = () => {
+//   const lastDisplay = retriveLastDisplayWeather();
+//   localStorage.setItem("lastDisplay", JSON.stringify({}));
+//   localStorage.setItem("lastDisplay", JSON.stringify(lastDisplay));
+// };
 
-const retriveLastDisplayWeather = () => {
-  let lastDisplayStringified = localStorage.getItem("lastDisplay");
-  let lastDisplay = JSON.parse(lastDisplayStringified);
-  if (lastDisplay == null) {
-    return {};
-  }
-  renderCurrentCityEl();
-  dailyForecastRetrieval();
-};
+// const retriveLastDisplayWeather = () => {
+//   let lastDisplayStringified = localStorage.getItem("lastDisplay");
+//   let lastDisplay = JSON.parse(lastDisplayStringified);
+//   if (lastDisplay == null) {
+//     return {};
+//   }
+//   renderCurrentCityEl();
+// dailyForecastRetrieval();
+// };
 
 const getFromLocalstorage = () => {
   let previousCitiesStringified = localStorage.getItem("previousCities");
@@ -245,6 +246,7 @@ const createPreviousCityList = (previousCities) => {
   $("#saved-cities").empty();
 
   let cityKeys = Object.keys(previousCities);
+
   for (i = 0; i < cityKeys.length; i++) {
     let cityEntries = $("<button>");
     cityEntries.addClass(
@@ -259,40 +261,54 @@ const createPreviousCityList = (previousCities) => {
     let titleUppercaseCity = stringSplit.join(" ");
     cityEntries.text(titleUppercaseCity);
 
-    cityEntries.on("click", function (event) {
-      $("#searchInput").val($(this).text());
-      initiate(event);
+    cityEntries.on("click", function () {
+      let clickedCity = $(this).text();
+      searchCityWeatherAPI(clickedCity);
     });
     $("#saved-cities").append(cityEntries);
   }
 };
 
-const renderCurrentCityEl = (
-  cityName,
-  rawDateVal,
-  weatherIconVal,
-  currentWeatherTemp,
-  weatherWindSpeed,
-  weatherHumidity,
-  uvIndex
-) => {
+const renderCurrentCityEl = (currentData, uvIndex) => {
   let activeCityName = $(".city-active");
   let activeCityDate = $(".current-date");
   let activeCityIcon = $(".weather-icon");
-  let currentDate = new Date(rawDateVal * 1000).toLocaleDateString("en-AU");
-  let currentWeatherIcon = weatherIconURL + weatherIconVal + "@2x.png";
+  let currentDate = new Date(currentData.rawDateVal * 1000).toLocaleDateString(
+    "en-AU"
+  );
+  let currentWeatherIcon =
+    weatherIconURL + currentData.weatherIconVal + "@2x.png";
 
-  activeCityName.text(cityName);
+  activeCityName.text(currentData.cityName);
   activeCityDate.text(currentDate);
   activeCityIcon.attr("src", currentWeatherIcon);
+
+  let isMetricOrImperial = $("#metric-button").is(":checked");
 
   let temperatureText = $(".temperature-text");
   let windText = $(".wind-text");
   let humidityText = $(".humidity-text");
+  // had to google this (ternary operator)
+  let degreeSymbol = isMetricOrImperial ? "°C" : "°F";
+  let windSpeedSymbol = isMetricOrImperial ? "m/s" : "mph";
 
-  temperatureText.text(currentWeatherTemp);
-  windText.text(weatherWindSpeed);
-  humidityText.text(weatherHumidity);
+  temperatureText.text(
+    transformTemperatureToSelectedFormat(
+      isMetricOrImperial,
+      currentData.currentWeatherTemp
+    ).toFixed(2) +
+      " " +
+      degreeSymbol
+  );
+  windText.text(
+    transformWindspeedToSelectedUnits(
+      isMetricOrImperial,
+      currentData.weatherWindSpeed
+    ).toFixed(2) +
+      " " +
+      windSpeedSymbol
+  );
+  humidityText.text(currentData.weatherHumidity + " " + "%");
   renderUV(uvIndex);
 };
 
@@ -314,23 +330,78 @@ const renderUV = (uvIndex) => {
   }
 };
 
+const convertKelvinToCelsius = (temperatureInKelvin) => {
+  return temperatureInKelvin - 273.15;
+};
+
+const convertKelvinToFarenheit = (temperatureInKelvin) => {
+  return ((temperatureInKelvin - 273.15) * 9) / 5 + 32;
+};
+
+const transformTemperatureToSelectedFormat = (
+  isMetricOrImperial,
+  temperatureInKelvin
+) => {
+  if (isMetricOrImperial) {
+    return convertKelvinToCelsius(temperatureInKelvin);
+  } else {
+    return convertKelvinToFarenheit(temperatureInKelvin);
+  }
+};
+
+const metricButtonSelection = () => {
+  let searchName = getSelectedCityState();
+
+  if (typeof searchName !== "undefined") {
+    searchCityWeatherAPI(searchName);
+  }
+};
+
+const convertMetresPerSecToMPH = (windspeedInMetres) => {
+  return windspeedInMetres / 2.237;
+};
+
+const transformWindspeedToSelectedUnits = (
+  isMetricOrImperial,
+  windspeedInMetres
+) => {
+  if (isMetricOrImperial) {
+    return windspeedInMetres;
+  } else {
+    return convertMetresPerSecToMPH(windspeedInMetres);
+  }
+};
+
 const dailyForecastRetrieval = (weatherDaily) => {
   const forecastRow = $(".forecast-row");
   forecastRow.empty();
+  let isMetricOrImperial = $("#metric-button").is(":checked");
+  let degreeSymbol = isMetricOrImperial ? "°C" : "°F";
   for (i = 0; i < forecastDayTarget; i++) {
-    // daily main max
-    let tempMax = weatherDaily[i].temp.max;
-    // daily main min
-    let tempMin = weatherDaily[i].temp.min;
-    // daily main humidity
+    let dailyMaxTemperature =
+      transformTemperatureToSelectedFormat(
+        isMetricOrImperial,
+        weatherDaily[i].temp.max
+      ).toFixed(2) +
+      " " +
+      degreeSymbol;
+
+    let dailyMinTemperature =
+      transformTemperatureToSelectedFormat(
+        isMetricOrImperial,
+        weatherDaily[i].temp.min
+      ).toFixed(2) +
+      " " +
+      degreeSymbol;
+
     let dailyHumidity = weatherDaily[i].humidity;
-    // daily main weather icon
+
     let dailyWeatherIcon = weatherDaily[i].weather[0].icon;
-    // weatherIcon URL
+
     let weatherIconImg = weatherIconURL + dailyWeatherIcon + "@2x.png";
-    // forecast date
+
     let dailyDates = weatherDaily[i].dt;
-    // format the date
+
     let formattedDates = new Date(dailyDates * 1000).toLocaleDateString(
       "en-AU"
     );
@@ -359,9 +430,9 @@ const dailyForecastRetrieval = (weatherDaily) => {
     let forecastMin = $("<p>");
     let forecastHumidity = $("<p>");
     forecastMax.attr("class", "cardinfo cardMaxTemperature");
-    forecastMax.text("Max Temp: " + tempMax);
+    forecastMax.text("Max Temp: " + dailyMaxTemperature);
     forecastMin.attr("class", "cardinfo cardMinTemperature");
-    forecastMin.text("Min Temp: " + tempMin);
+    forecastMin.text("Min Temp: " + dailyMinTemperature);
     forecastHumidity.attr("class", "cardinfo cardHumidity");
     forecastHumidity.text("H: " + dailyHumidity + "%");
     forecastCard2.append(forecastHeadingDate);
@@ -381,17 +452,27 @@ const clearAllEvents = () => {
 };
 
 const clearLocalStorage = () => {
-  previousCities = {};
-  localStorage.setItem("previousCities", JSON.stringify(previousCities));
+  localStorage.clear();
+};
+
+const saveSelectedCityState = (selectedCityName) => {
+  localStorage.setItem("selectedCity", selectedCityName);
+};
+
+const getSelectedCityState = () => {
+  return localStorage.getItem("selectedCity");
 };
 
 // this function - will INITIATE the API calls
-$("#searchButton").click(initiate);
+$("#searchButton").click(searchCityButton);
 
 $("#clearHistory").click(function () {
   clearAllEvents();
   $("#saved-cities").empty();
 });
+
+$("#metric-button").click(metricButtonSelection);
+$("#imperial-button").click(metricButtonSelection);
 
 // $("#current-weather").addClass(".hide");
 // $("#5dayforecast").addClass(".hide");
