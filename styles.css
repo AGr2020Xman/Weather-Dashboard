@@ -1,16 +1,18 @@
 body {
-    background-image: url("./Assets/lightcloud.jpg");
+    background-image: url("./Assets/cloudy-day.png");
 }
 
 .sidebar {
     top: 0;
     bottom: 0;
     left: 0;
-    padding: 48px 2px 2px;
+    padding: 48px 0 0;
     /* stay clear of navbar */
     z-index: 100;
     /* extra height push behind nav */
-    height: 100vw;
+    height: 75vw;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .sidebar-sticky {
@@ -73,7 +75,7 @@ body {
 
 .jumbotron {
     margin-top: 5px;
-    background-color: paleturquoise;
+    background-color: palegoldenrod;
 }
 
 main {

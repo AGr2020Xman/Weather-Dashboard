@@ -174,7 +174,7 @@ const getFromLocalstorage = () => {
     return {};
   }
   var cityKeys = Object.keys(previousCities);
-  if (cityKeys.length > 10) {
+  if (cityKeys.length >= 9) {
     delete previousCities[cityKeys[0]];
   }
   return previousCities;
@@ -244,6 +244,11 @@ const dailyForecastRetrieval = (weatherDaily) => {
       "en-AU"
     );
 
+    console.log(formattedDates);
+    console.log(weatherIconImg);
+    console.log(tempMax);
+    console.log(tempMin);
+    console.log(dailyHumidity);
     $("#daily" + i + "date").text(formattedDates);
     $("#daily" + i + "image").attr("src", weatherIconImg);
     $("#daily" + i + "tempMax").text(
