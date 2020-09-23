@@ -28,7 +28,6 @@
               <input type="radio" name="units" id="imperial-button" data-value="imperial" autocomplete="off"> &#xb0 F
             </label>
           </div>
-          <section id="saved-cities"></section>
           <form id="user-search-form">
             <div class="form-group">
               <label for="searchInput">Search for a city:</label>
@@ -36,10 +35,12 @@
             </div>
             <button type="submit" id="searchButton" class="btn btn-secondary btn-sm btn-block">Search</button>
           </form>
-          <button></button>
+          <button class="btn btn-warning btn-sm btn-block" type="button" id="clearHistory">Clear History</button>
+          <section class="flex-column" id="saved-cities"></section>
         </aside>
       </nav>
-      <section class="col-md-6">
+      <section class="col-md-9">
+        <div class="container"></div>
         <div id="singleDayWeather">
           <!-- <h1>City Name (DD/MM/YYYY)<i>IconImage</i></h1>
           <p class="details">Temperature: <span class=temperature-text>Value</span></p>
