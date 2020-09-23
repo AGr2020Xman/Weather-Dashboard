@@ -6,7 +6,7 @@
     top: 0;
     bottom: 0;
     left: 0;
-    padding: 48px 0 0;
+    padding: 48px 2px 2px;
     /* stay clear of navbar */
     z-index: 100;
     /* extra height push behind nav */
@@ -18,7 +18,7 @@
     /* don't show overflow on X - shouldn't happen anyway || y is auto to allow scrolling on mobile viewports*/
     overflow-y: auto;
     top: 0;
-    padding-top: 62.5%;
+    padding-top: 0.75rem;
 }
 
 .lowUV {
@@ -62,8 +62,8 @@
 }
 
 .card {
-    max-width: 20rem;
-    margin: 5px;
+    max-width: 18rem;
+    margin: 10px;
 }
 
 .card-body {
@@ -72,4 +72,9 @@
 
 .jumbotron {
     margin-top: 5px;
+    background-color: paleturquoise;
+}
+
+main {
+    padding-top: 15px;
 }
