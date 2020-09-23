@@ -69,8 +69,8 @@ const initiate = async (event) => {
     dailyForecastRetrieval(forecastData.weatherDaily);
   } catch (error) {
     console.log(error);
-    if (error.statusCode === 404) {
-      alert("Please try again");
+    if (error === 404) {
+      alert("Error 404: Please try again");
     }
   }
 };
@@ -223,6 +223,7 @@ const getFromLocalstorage = () => {
 
 const savePreviousCity = (cityName) => {
   if (!cityName) {
+    // if cityName false OR if searchAPI returns error 404.
     return;
   }
   const previousCities = getFromLocalstorage();
@@ -255,7 +256,6 @@ const createPreviousCityList = (previousCities) => {
     });
     $("#saved-cities").append(cityEntries);
   }
-  // gives the button text ~ *cityName* ~ userInput
 };
 
 const createSingleCityEl = (
@@ -272,15 +272,6 @@ const createSingleCityEl = (
   let activeCityIcon = $(".weather-icon");
   let currentDate = new Date(rawDateVal * 1000).toLocaleDateString("en-AU");
   let currentWeatherIcon = weatherIconURL + weatherIconVal + ".png";
-
-  console.log(cityName, "string");
-  console.log(rawDateVal);
-  console.log(weatherIconVal);
-  console.log(currentWeatherTemp);
-  console.log(weatherWindSpeed);
-  console.log(weatherHumidity);
-  console.log(uvIndex);
-  console.log(currentWeatherIcon);
 
   activeCityName.text(cityName);
   activeCityDate.text(currentDate);
@@ -330,12 +321,6 @@ const dailyForecastRetrieval = (weatherDaily) => {
       "en-AU"
     );
 
-    // console.log(formattedDates, dailyDates);
-    // console.log(weatherIconImg);
-    // console.log(tempMax);
-    // console.log(tempMin);
-    // console.log(dailyHumidity);
-
     let forecastCard = $("<div>");
     forecastCard.attr("class", "col");
 
@@ -376,11 +361,8 @@ const dailyForecastRetrieval = (weatherDaily) => {
   }
 };
 
-const populateForecastEl = () => {};
-
-const populateSingleCityData = () => {
-  var nowMoment = moment();
-};
+// this function - will INITIATE the API calls
+$("#searchButton").click(initiate);
 
 // $("#current-weather").addClass(".hide");
 // $("#5dayforecast").addClass(".hide");
@@ -390,9 +372,6 @@ const populateSingleCityData = () => {
 //     var city = $(this).text();
 
 // });
-
-// this function - will INITIATE the API calls
-$("#searchButton").click(initiate);
 
 // Another option which does away with the async/await and subscribes
 // more the the single responsibility behaviours that I like. Creates
