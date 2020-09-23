@@ -1,11 +1,11 @@
 // first API call to currentWeather responses
 
-var longitude;
+let longitude;
 
-var latitude;
+let latitude;
 
 // maximum 7 days
-var forecastDayTarget = 5;
+let forecastDayTarget = 5;
 
 const ApiKey = "3ff9623f9027960becbeadb447702b80";
 const weatherIconURL = "http://openweathermap.org/img/wn/";
@@ -15,9 +15,9 @@ const weatherIconURL = "http://openweathermap.org/img/wn/";
 
 // else if toggle = false >> + "&units=metric"
 
-var toggleReturnedUnits = () => {
-  var celsius = "&units=metric";
-  var farenheit = "&units=imperial";
+let toggleReturnedUnits = () => {
+  let celsius = "&units=metric";
+  let farenheit = "&units=imperial";
   if ($("#unit-switch")) {
     return farenheit;
   } else if ($("#unit-switch")) {
@@ -25,7 +25,7 @@ var toggleReturnedUnits = () => {
   }
 };
 
-var currentWeatherURL = (cityInput) => {
+let currentWeatherURL = (cityInput) => {
   return (
     "https://api.openweathermap.org/data/2.5/weather?q=" +
     cityInput +
@@ -35,7 +35,7 @@ var currentWeatherURL = (cityInput) => {
   );
 };
 
-var createURL2 = (latitude, longitude) => {
+let createURL2 = (latitude, longitude) => {
   return (
     "https://api.openweathermap.org/data/2.5/onecall?lat=" +
     latitude +
@@ -51,12 +51,11 @@ var createURL2 = (latitude, longitude) => {
 //
 const initiate = async (event) => {
   event.preventDefault();
-  savePreviousCity($("#searchInput").val().trim().toLowerCase());
+  savePreviousCitySearch($("#searchInput").val().trim().toLowerCase());
   try {
     const currentData = await searchCallToAPI();
     const forecastData = await oneAPICall();
-    console.log(currentData);
-    console.log(forecastData);
+    // saveLastDisplayedWeather();
     createSingleCityEl(
       currentData.cityName,
       currentData.rawDateVal,
@@ -78,6 +77,7 @@ const initiate = async (event) => {
 $(document).ready(function () {
   let previousCities = getFromLocalstorage();
   createPreviousCityList(previousCities);
+  // retriveLastDisplayWeather();
 });
 
 // data can only be access from the previous function
@@ -107,9 +107,9 @@ $(document).ready(function () {
 //         method: "GET",
 //       }).then(function (response) {
 //         // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
-//         var uvIndex = response.current.uvi;
+//         let uvIndex = response.current.uvi;
 //         // daily weather in SECOND api call -
-//         var weatherDaily = response.daily;
+//         let weatherDaily = response.daily;
 //         console.log("UV Index", uvIndex);
 
 //         return {weatherDaily, uvIndex}
@@ -135,10 +135,9 @@ const oneAPICall = () =>
     })
       .then(function (response) {
         // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
-        var uvIndex = response.current.uvi;
+        let uvIndex = response.current.uvi;
         // daily weather in SECOND api call -
-        var weatherDaily = response.daily;
-        console.log("UV Index", uvIndex);
+        let weatherDaily = response.daily;
 
         resolve({ weatherDaily, uvIndex });
       })
@@ -187,13 +186,6 @@ const searchCallToAPI = () =>
 
       let rawDateVal = response.dt;
 
-      console.log("CurrentTemp", currentWeatherTemp);
-      console.log("Humidity", weatherHumidity);
-      console.log("Wind Speed", weatherWindSpeed);
-      console.log("Longitude", longitude);
-      console.log("Latitude", latitude);
-      console.log("City", cityName);
-
       $("#searchInput").val("");
       resolve({
         longitude,
@@ -208,20 +200,36 @@ const searchCallToAPI = () =>
     });
   });
 
+const saveLastDisplayedWeather = () => {
+  const lastDisplay = retriveLastDisplayWeather();
+  localStorage.setItem("lastDisplay", JSON.stringify({}));
+  localStorage.setItem("lastDisplay", JSON.stringify(lastDisplay));
+};
+
+const retriveLastDisplayWeather = () => {
+  let lastDisplayStringified = localStorage.getItem("lastDisplay");
+  let lastDisplay = JSON.parse(lastDisplayStringified);
+  if (lastDisplay == null) {
+    return {};
+  }
+  createSingleCityEl();
+  dailyForecastRetrieval();
+};
+
 const getFromLocalstorage = () => {
-  var previousCitiesStringified = localStorage.getItem("previousCities");
-  var previousCities = JSON.parse(previousCitiesStringified);
+  let previousCitiesStringified = localStorage.getItem("previousCities");
+  let previousCities = JSON.parse(previousCitiesStringified);
   if (previousCities == null) {
     return {};
   }
-  var cityKeys = Object.keys(previousCities);
+  let cityKeys = Object.keys(previousCities);
   if (cityKeys.length >= 9) {
     delete previousCities[cityKeys[0]];
   }
   return previousCities;
 };
 
-const savePreviousCity = (cityName) => {
+const savePreviousCitySearch = (cityName) => {
   if (!cityName) {
     // if cityName false OR if searchAPI returns error 404.
     return;
@@ -235,19 +243,19 @@ const savePreviousCity = (cityName) => {
 const createPreviousCityList = (previousCities) => {
   $("#saved-cities").empty();
 
-  var cityKeys = Object.keys(previousCities);
+  let cityKeys = Object.keys(previousCities);
   for (i = 0; i < cityKeys.length; i++) {
-    var cityEntries = $("<button>");
+    let cityEntries = $("<button>");
     cityEntries.addClass(
       "list-group list-group-item list-group-item-action savedButtons"
     );
 
-    var stringSplit = cityKeys[i].toLowerCase().split(" ");
+    let stringSplit = cityKeys[i].toLowerCase().split(" ");
     for (j = 0; j < stringSplit.length; j++) {
       stringSplit[j] =
         stringSplit[j].charAt(0).toUpperCase() + stringSplit[j].substring(1);
     }
-    var titleUppercaseCity = stringSplit.join(" ");
+    let titleUppercaseCity = stringSplit.join(" ");
     cityEntries.text(titleUppercaseCity);
 
     cityEntries.on("click", function (event) {
@@ -271,7 +279,7 @@ const createSingleCityEl = (
   let activeCityDate = $(".current-date");
   let activeCityIcon = $(".weather-icon");
   let currentDate = new Date(rawDateVal * 1000).toLocaleDateString("en-AU");
-  let currentWeatherIcon = weatherIconURL + weatherIconVal + ".png";
+  let currentWeatherIcon = weatherIconURL + weatherIconVal + "@2x.png";
 
   activeCityName.text(cityName);
   activeCityDate.text(currentDate);
@@ -313,7 +321,7 @@ const dailyForecastRetrieval = (weatherDaily) => {
     // daily main weather icon
     let dailyWeatherIcon = weatherDaily[i].weather[0].icon;
     // weatherIcon URL
-    let weatherIconImg = weatherIconURL + dailyWeatherIcon + ".png";
+    let weatherIconImg = weatherIconURL + dailyWeatherIcon + "@2x.png";
     // forecast date
     let dailyDates = weatherDaily[i].dt;
     // format the date
@@ -361,15 +369,30 @@ const dailyForecastRetrieval = (weatherDaily) => {
   }
 };
 
+const clearAllEvents = () => {
+  clearLocalStorage();
+  $(".forecast-row").empty();
+};
+
+const clearLocalStorage = () => {
+  previousCities = {};
+  localStorage.setItem("previousCities", JSON.stringify(previousCities));
+};
+
 // this function - will INITIATE the API calls
 $("#searchButton").click(initiate);
+
+$("#clearHistory").click(function () {
+  clearAllEvents();
+  $("#saved-cities").empty();
+});
 
 // $("#current-weather").addClass(".hide");
 // $("#5dayforecast").addClass(".hide");
 
 // $("#city-list").click((event)=>{
 //     event.preventDefault();
-//     var city = $(this).text();
+//     let city = $(this).text();
 
 // });
 
@@ -382,13 +405,13 @@ $("#searchButton").click(initiate);
 //   }
 
 //   $(#search).on("click", function(){
-//   var cityInput = $("#searchInput").val().trim().toLowerCase();
+//   let cityInput = $("#searchInput").val().trim().toLowerCase();
 //   searchCityAPI(cityInput)
 
 //   })
 
 //   $(".buttonHistory").on("click", function(){
-//   var cityInput = $(this).text()
+//   let cityInput = $(this).text()
 //   searchCityAPI(cityInput)
 
 //   })

@@ -33,6 +33,11 @@ body {
     padding-top: 0.75rem;
 }
 
+.current-date {
+    margin: 2px;
+    font-weight: bolder;
+}
+
 .lowUV {
     border-radius: 5px;
     background-color: green;
@@ -84,7 +89,7 @@ body {
 
 .jumbotron {
     margin-top: 5px;
-    background-color: palegoldenrod;
+    background-color: rgb(185, 182, 146);
 }
 
 main {
