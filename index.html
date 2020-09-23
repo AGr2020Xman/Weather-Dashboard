@@ -17,56 +17,74 @@
     </header>
     <div class="container">
       <section class="row">
-      <nav class="col-md-3 sidebar col-lg-2 d-md-block bg-light" id="searchSidebar">
-        <aside class="sidebar-sticky pt-3">
-          <!-- add bottom padding to these? -->
-          <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
-            <label class="btn btn-secondary btn-sm" data-value="metric">
-              <input type="radio" name="units" id="metric-button" data-value="metric" autocomplete="off"> &#xb0 C
-            </label>
-            <label class="btn btn-secondary btn-sm" data-value="imperial">
-              <input type="radio" name="units" id="imperial-button" data-value="imperial" autocomplete="off"> &#xb0 F
-            </label>
-          </div>
-          <form id="user-search-form">
-            <div class="form-group">
-              <label for="searchInput">Search for a city:</label>
-              <input id="searchInput" type="text" class="form-control" placeholder="Search city here" aria-label="Search for a city here" aria-describedby="button-addon2" id="unit-switch">
+        <nav class="col-md-3 sidebar col-lg-2 d-md-block bg-light" id="searchSidebar">
+          <aside class="sidebar-sticky pt-3">
+            <!-- add bottom padding to these? -->
+            <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
+              <label class="btn btn-info btn-sm" data-value="metric">
+                <input type="radio" name="units" id="metric-button" data-value="metric" autocomplete="off"> &#xb0 C
+              </label>
+              <label class="btn btn-info btn-sm" data-value="imperial">
+                <input type="radio" name="units" id="imperial-button" data-value="imperial" autocomplete="off"> &#xb0 F
+              </label>
             </div>
-            <button type="submit" id="searchButton" class="btn btn-secondary btn-sm btn-block">Search</button>
-          </form>
-          <button class="btn btn-warning btn-sm btn-block" type="button" id="clearHistory">Clear History</button>
-          <section class="flex-column" id="saved-cities"></section>
-        </aside>
-      </nav>
-      <section class="col-md-9">
-        <div class="container"></div>
-        <div id="singleDayWeather">
-          <!-- <h1>City Name (DD/MM/YYYY)<i>IconImage</i></h1>
-          <p class="details">Temperature: <span class=temperature-text>Value</span></p>
-          <p class="details">Wind Speed: <span class=wind-text>Value</span></p>
-          <p class="details">Humidity: <span class=humidity-text>Value</span></p>
-          <p class="details">UV Index: <span class=uv-text>Value</span></p> -->
-        </div>
-      </section>
-      </section>
-      <section class="row">
-        <section class="col-md-12">
-          <section id="5dayForecast">
-            <!-- <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div> -->
-          </section>
+            <form id="user-search-form">
+              <div class="form-group">
+                <label for="searchInput">Search for a city:</label>
+                <input id="searchInput" type="text" class="form-control" placeholder="Search city here" aria-label="Search for a city here" aria-describedby="button-addon2" id="unit-switch">
+              </div>
+              <button type="submit" id="searchButton" class="btn btn-primary btn-sm btn-block">Search</button>
+            </form>
+            <button class="btn btn-warning btn-sm btn-block" type="button" id="clearHistory">Clear History</button>
+            <section class="flex-column" id="saved-cities"></section>
+          </aside>
+        </nav>
+        <section class="col-md-9">
+          <div class="container">
+            <main>
+              <div class="jumbotron">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <h1 class="city-active display-4"></h1>
+                      <div class="current-date"></div>
+                      <div class="weather-icon"></div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <p class="details">Temperature: <span class=temperature-text>Value</span></p>
+                          <p class="details">Wind Speed: <span class=wind-text>Value</span></p>
+                          <p class="details">Humidity: <span class=humidity-text>Value</span></p>
+                          <p class="details">UV Index: <span class=uv-text>Value</span></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class=col-md-12>
+                  <h4>5-Day forecast:</h4>
+                </div>
+              </div>
+              <div class="row future-forecast-row"></div>
+            </main>
+          </div>          
         </section>
-
       </section>
+      
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.28.0/moment.min.js"
+      integrity="sha512-Q1f3TS3vSt1jQ8AwP2OuenztnLU6LwxgyyYOG1jgMW/cbEMHps/3wjvnl1P3WTrF3chJUWEoxDUEjMxDV8pujg=="
+      crossorigin="anonymous"
+  ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <script src="script.js"></script>
