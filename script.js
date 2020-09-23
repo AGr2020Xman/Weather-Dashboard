@@ -6,21 +6,6 @@ let forecastDayTarget = 5;
 const ApiKey = "3ff9623f9027960becbeadb447702b80";
 const weatherIconURL = "http://openweathermap.org/img/wn/";
 
-// <<< Celsius || Farhenheit >>>
-// if toggle = true >> + "&units=imperial"
-
-// else if toggle = false >> + "&units=metric"
-
-let toggleReturnedUnits = () => {
-  let celsius = "&units=metric";
-  let farenheit = "&units=imperial";
-  if ($("#unit-switch")) {
-    return farenheit;
-  } else if ($("#unit-switch")) {
-    return celsius;
-  }
-};
-
 let currentWeatherURL = (cityInput) => {
   return (
     "https://api.openweathermap.org/data/2.5/weather?q=" +
@@ -43,10 +28,9 @@ let createURL2 = (latitude, longitude) => {
   );
 };
 
-// bestpractice
-//
 const searchCityWeatherAPI = async (searchName) => {
   searchName = searchName.toLowerCase().trim();
+  $("#searchInput").val("");
   try {
     const currentData = await searchCallToAPI(searchName);
     savePreviousCitySearch(searchName);
@@ -59,7 +43,6 @@ const searchCityWeatherAPI = async (searchName) => {
     renderCurrentCityEl(currentData, forecastData.uvIndex);
     dailyForecastRetrieval(forecastData.weatherDaily);
   } catch (error) {
-    console.log(error);
     if (error === 404) {
       alert("Error 404: Please try again");
     }
@@ -83,43 +66,6 @@ $(document).ready(function () {
   // retriveLastDisplayWeather();
 });
 
-// data can only be access from the previous function
-// the called function is a promise - THEN it return another promise
-// promises are asynchronous functions that need to be handled in a special manner
-// here (below) (with the help of tw0v) i have got a chain of THENables (due to the promise)
-
-// const initiate = (event) => {
-//   event.preventDefault();
-
-//   searchCallToAPI()
-//     .then(function (coordinates) {
-//       return oneAPICall();
-//     })
-//     .then(function (forecastData) {
-//       dailyForecastRetrieval(forecastData.weatherDaily);
-//     })
-//     .catch(function (e) {
-//       //do error message alert
-//     });
-// };
-
-// const promiseExample = () => {
-
-//     return $.ajax({
-//         url: createURL2(latitude, longitude),
-//         method: "GET",
-//       }).then(function (response) {
-//         // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
-//         let uvIndex = response.current.uvi;
-//         // daily weather in SECOND api call -
-//         let weatherDaily = response.daily;
-//         console.log("UV Index", uvIndex);
-
-//         return {weatherDaily, uvIndex}
-//       });
-
-// };
-
 const oneAPICall = (latitude, longitude) =>
   new Promise((resolve, reject) => {
     $.ajax({
@@ -127,11 +73,8 @@ const oneAPICall = (latitude, longitude) =>
       method: "GET",
       statusCode: {
         404: function () {
-          alert("Error 404 - please try again");
-        },
-        400: function () {
           alert(
-            "Incorrect coordinates received. Please search the city again."
+            "Error 404 - the coordinates could not be saved. Please try again."
           );
         },
       },
@@ -156,11 +99,6 @@ const searchCallToAPI = (cityInput) =>
       statusCode: {
         404: function () {
           alert("Error 404 - please try again");
-        },
-        400: function () {
-          alert(
-            "This city does not exist or is spelt incorrectly. Please try again."
-          );
         },
       },
     }).then((response) => {
@@ -201,22 +139,6 @@ const searchCallToAPI = (cityInput) =>
       });
     });
   });
-
-// const saveLastDisplayedWeather = () => {
-//   const lastDisplay = retriveLastDisplayWeather();
-//   localStorage.setItem("lastDisplay", JSON.stringify({}));
-//   localStorage.setItem("lastDisplay", JSON.stringify(lastDisplay));
-// };
-
-// const retriveLastDisplayWeather = () => {
-//   let lastDisplayStringified = localStorage.getItem("lastDisplay");
-//   let lastDisplay = JSON.parse(lastDisplayStringified);
-//   if (lastDisplay == null) {
-//     return {};
-//   }
-//   renderCurrentCityEl();
-// dailyForecastRetrieval();
-// };
 
 const getFromLocalstorage = () => {
   let previousCitiesStringified = localStorage.getItem("previousCities");
@@ -270,6 +192,7 @@ const createPreviousCityList = (previousCities) => {
 };
 
 const renderCurrentCityEl = (currentData, uvIndex) => {
+  // debugger;
   let activeCityName = $(".city-active");
   let activeCityDate = $(".current-date");
   let activeCityIcon = $(".weather-icon");
@@ -288,6 +211,7 @@ const renderCurrentCityEl = (currentData, uvIndex) => {
   let temperatureText = $(".temperature-text");
   let windText = $(".wind-text");
   let humidityText = $(".humidity-text");
+  let uvText = $(".uv-text");
   // had to google this (ternary operator)
   let degreeSymbol = isMetricOrImperial ? "°C" : "°F";
   let windSpeedSymbol = isMetricOrImperial ? "m/s" : "mph";
@@ -309,25 +233,28 @@ const renderCurrentCityEl = (currentData, uvIndex) => {
       windSpeedSymbol
   );
   humidityText.text(currentData.weatherHumidity + " " + "%");
-  renderUV(uvIndex);
+  uvText.text(renderUV(uvIndex).toFixed(2));
 };
 
 const renderUV = (uvIndex) => {
-  let uvText = $(".uv-text");
-  valueInt = parseInt(uvIndex);
-  console.log(uvIndex);
-  uvText.text(uvIndex);
-  if (0 <= uvIndex < 3) {
+  const uvText = $(".uv-text");
+
+  uvText.attr("class", "uv-text");
+  if (uvIndex >= 0 && uvIndex < 3) {
     uvText.addClass("lowUV");
-  } else if (3 <= uvIndex < 6) {
+  } else if (uvIndex >= 3 && uvIndex < 6) {
     uvText.addClass("medUV");
-  } else if (6 <= uvIndex < 8) {
+  } else if (uvIndex >= 6 && uvIndex < 8) {
     uvText.addClass("highUV");
-  } else if (8 <= uvIndex < 11) {
+  } else if (uvIndex >= 8 && uvIndex < 11) {
     uvText.addClass("veryhighUV");
-  } else {
+  } else if (uvIndex >= 11) {
     uvText.addClass("extremeUV");
+  } else {
+    uvText.addClass("uv-text");
   }
+
+  return uvIndex;
 };
 
 const convertKelvinToCelsius = (temperatureInKelvin) => {
@@ -434,7 +361,7 @@ const dailyForecastRetrieval = (weatherDaily) => {
     forecastMin.attr("class", "cardinfo cardMinTemperature");
     forecastMin.text("Min Temp: " + dailyMinTemperature);
     forecastHumidity.attr("class", "cardinfo cardHumidity");
-    forecastHumidity.text("H: " + dailyHumidity + "%");
+    forecastHumidity.text("Humidity: " + dailyHumidity + "%");
     forecastCard2.append(forecastHeadingDate);
     forecastCard2.append(forecastImage);
     forecastCard2.append(forecastMax);
@@ -463,7 +390,6 @@ const getSelectedCityState = () => {
   return localStorage.getItem("selectedCity");
 };
 
-// this function - will INITIATE the API calls
 $("#searchButton").click(searchCityButton);
 
 $("#clearHistory").click(function () {
@@ -472,33 +398,5 @@ $("#clearHistory").click(function () {
 });
 
 $("#metric-button").click(metricButtonSelection);
+
 $("#imperial-button").click(metricButtonSelection);
-
-// $("#current-weather").addClass(".hide");
-// $("#5dayforecast").addClass(".hide");
-
-// $("#city-list").click((event)=>{
-//     event.preventDefault();
-//     let city = $(this).text();
-
-// });
-
-// Another option which does away with the async/await and subscribes
-// more the the single responsibility behaviours that I like. Creates
-// the need for a bit more daisy chaining however I think.
-
-// function searchCityAPI(city){
-//   //ajax call here and the rest of the code
-//   }
-
-//   $(#search).on("click", function(){
-//   let cityInput = $("#searchInput").val().trim().toLowerCase();
-//   searchCityAPI(cityInput)
-
-//   })
-
-//   $(".buttonHistory").on("click", function(){
-//   let cityInput = $(this).text()
-//   searchCityAPI(cityInput)
-
-//   })
