@@ -2,6 +2,14 @@ body {
     background-image: url("./Assets/cloudy-day.png");
 }
 
+.details {
+    font-weight: 300;
+}
+
+.cardinfo {
+    font-size: medium;
+}
+
 .sidebar {
     top: 0;
     bottom: 0;
@@ -13,6 +21,7 @@ body {
     height: 100%;
     padding-left: 15px;
     padding-right: 15px;
+    padding-bottom: 15px;
 }
 
 .sidebar-sticky {
