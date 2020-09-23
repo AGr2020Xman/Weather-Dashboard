@@ -1,5 +1,5 @@
-.attention {
-    color: red
+body {
+    background-image: url("./Assets/lightcloud.jpg");
 }
 
 .sidebar {
@@ -10,6 +10,7 @@
     /* stay clear of navbar */
     z-index: 100;
     /* extra height push behind nav */
+    height: 100vw;
 }
 
 .sidebar-sticky {
