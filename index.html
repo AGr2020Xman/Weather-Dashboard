@@ -10,23 +10,35 @@
   </head>
 
   <body>
-    <nav>
-    </nav>
+    <header>
+      <nav class="navbar nabar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.html">Weather Dashboard</a>
+      </nav>
+    </header>
     <div class="container">
       <section class="row">
-      <section class="col-md-6">
-        <aside>
+      <nav class="col-md-3 sidebar col-lg-2 d-md-block bg-light" id="searchSidebar">
+        <aside class="sidebar-sticky pt-3">
+          <!-- add bottom padding to these? -->
+          <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
+            <label class="btn btn-secondary btn-sm" data-value="metric">
+              <input type="radio" name="units" id="metric-button" data-value="metric" autocomplete="off"> &#xb0 C
+            </label>
+            <label class="btn btn-secondary btn-sm" data-value="imperial">
+              <input type="radio" name="units" id="imperial-button" data-value="imperial" autocomplete="off"> &#xb0 F
+            </label>
+          </div>
           <section id="saved-cities"></section>
-          <form>
-            <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" id="unit-switch">
-              <label class="custom-control-label" for="unit-switch">Toggle for Farenheit <span class="attention">(Default Celsius)</span></label>
+          <form id="user-search-form">
+            <div class="form-group">
+              <label for="searchInput">Search for a city:</label>
+              <input id="searchInput" type="text" class="form-control" placeholder="Search city here" aria-label="Search for a city here" aria-describedby="button-addon2" id="unit-switch">
             </div>
-            <input id="searchInput" type="user_input"></input>
+            <button type="submit" id="searchButton" class="btn btn-secondary btn-sm btn-block">Search</button>
           </form>
+          <button></button>
         </aside>
-        <button role="submit" id="search">Search</button>
-      </section>
+      </nav>
       <section class="col-md-6">
         <div id="singleDayWeather">
           <!-- <h1>City Name (DD/MM/YYYY)<i>IconImage</i></h1>

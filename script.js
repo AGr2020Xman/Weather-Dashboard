@@ -293,7 +293,7 @@ const populateSingleCityData = () => {
 // });
 
 // this function - will INITIATE the API calls
-$("#search").click(initiate);
+$("#searchButton").click(initiate);
 
 // Another option which does away with the async/await and subscribes
 // more the the single responsibility behaviours that I like. Creates
