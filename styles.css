@@ -2,6 +2,14 @@
     color: red
 }
 
+.sidebar {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding: 48px 0 0;
+    /* stay clear of navbar */
+}
+
 .lowUV {
     border-radius: 5px;
     background-color: green;
