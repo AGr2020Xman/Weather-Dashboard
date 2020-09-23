@@ -55,7 +55,17 @@ const initiate = async (event) => {
   try {
     const currentData = await searchCallToAPI();
     const forecastData = await oneAPICall();
-    createSingleCityEl(forecastData, currentData);
+    console.log(currentData);
+    console.log(forecastData);
+    createSingleCityEl(
+      currentData.currentWeatherTemp,
+      currentData.weatherHumidity,
+      currentData.weatherWindSpeed,
+      currentData.cityName,
+      currentData.rawDateVal,
+      currentData.weatherIconVal,
+      forecastData.uvIndex
+    );
     dailyForecastRetrieval(forecastData.weatherDaily);
   } catch (error) {
     console.log(error);
@@ -247,20 +257,33 @@ const createPreviousCityList = (previousCities) => {
   }
   // gives the button text ~ *cityName* ~ userInput
 };
-// re-render + fetchlist
-const createForecastEl = () => {};
 
-const createSingleCityEl = (currentData, forecastData) => {
-  $(".jumbotron").empty();
+const createSingleCityEl = (
+  cityName,
+  rawDateVal,
+  weatherIconVal,
+  currentWeatherTemp,
+  weatherWindSpeed,
+  weatherHumidity,
+  uvIndex
+) => {
   let activeCityName = $(".city-active");
   let activeCityDate = $(".current-date");
   let activeCityIcon = $(".weather-icon");
-  let currentDate = new Date(currentData.rawDateVal * 1000).toLocaleDateString(
-    "en-AU"
-  );
-  let currentWeatherIcon = weatherIconURL + currentData.weatherIconVal + ".png";
-  activeCityName.html(currentData.cityName);
-  activeCityDate.html(currentDate);
+  let currentDate = new Date(rawDateVal * 1000).toLocaleDateString("en-AU");
+  let currentWeatherIcon = weatherIconURL + weatherIconVal + ".png";
+
+  console.log(cityName);
+  console.log(rawDateVal);
+  console.log(weatherIconVal);
+  console.log(currentWeatherTemp);
+  console.log(weatherWindSpeed);
+  console.log(weatherHumidity);
+  console.log(uvIndex);
+  console.log(currentWeatherIcon);
+
+  activeCityName.text(cityName);
+  activeCityDate.text(currentDate);
   activeCityIcon.attr("src", currentWeatherIcon);
 
   let temperatureText = $(".temperature-text");
@@ -268,11 +291,11 @@ const createSingleCityEl = (currentData, forecastData) => {
   let humidityText = $(".humidity-text");
   let uvText = $(".uv-text");
 
-  temperatureText.html(currentData.currentWeatherTemp);
-  windText.html(currentData.weatherWindSpeed);
-  humidityText.html(currentData.weatherHumidity);
+  temperatureText.text(currentWeatherTemp);
+  windText.text(weatherWindSpeed);
+  humidityText.text(weatherHumidity);
 
-  uvText.html(forecastData.uvIndex);
+  uvText.text(uvIndex);
   if (0 <= uvIndex < 3) {
     $(uvText).addClass("lowUV");
   } else if (3 <= uvIndex < 6) {
