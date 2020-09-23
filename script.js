@@ -53,8 +53,9 @@ const initiate = async (event) => {
   event.preventDefault();
   savePreviousCity($("#searchInput").val().trim().toLowerCase());
   try {
-    const coordinates = await searchCallToAPI();
+    const currentData = await searchCallToAPI();
     const forecastData = await oneAPICall();
+    createSingleCityEl(forecastData, currentData);
     dailyForecastRetrieval(forecastData.weatherDaily);
   } catch (error) {
     console.log(error);
@@ -111,6 +112,16 @@ const oneAPICall = () =>
     $.ajax({
       url: createURL2(latitude, longitude),
       method: "GET",
+      statusCode: {
+        404: function () {
+          alert("Error 404 - please try again");
+        },
+        400: function () {
+          alert(
+            "Incorrect coordinates received. Please search the city again."
+          );
+        },
+      },
     })
       .then(function (response) {
         // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
@@ -126,34 +137,45 @@ const oneAPICall = () =>
 
 const searchCallToAPI = () =>
   new Promise((resolve, reject) => {
-    var cityInput = $("#searchInput").val().trim().toLowerCase();
+    let cityInput = $("#searchInput").val().trim().toLowerCase();
     $.ajax({
       url: currentWeatherURL(cityInput),
       method: "GET",
+      statusCode: {
+        404: function () {
+          alert("Error 404 - please try again");
+        },
+        400: function () {
+          alert(
+            "This city does not exist or is spelt incorrectly. Please try again."
+          );
+        },
+      },
     }).then((response) => {
-      var weatherStats = response.main;
-      var cityName = response.name;
+      let cityName = response.name;
       // in Kelvin - (toggle F<>C)
-      var weatherStats = response.main;
-      var currentWeatherTemp = weatherStats.temp;
-      var weatherHumidity = weatherStats.humidity;
+      let weatherStats = response.main;
+      let currentWeatherTemp = weatherStats.temp;
+      let weatherHumidity = weatherStats.humidity;
       // root ARRAY
-      var weatherCall = response.weather;
+      let weatherCall = response.weather;
 
       // (.png)
-      var weatherIconVal = weatherCall[0].icon;
+      let weatherIconVal = weatherCall[0].icon;
 
       // access coords
-      var weatherCoord = response.coord;
+      let weatherCoord = response.coord;
 
       longitude = weatherCoord.lon;
 
       latitude = weatherCoord.lat;
 
       // open wind obj
-      var weatherWind = response.wind;
+      let weatherWind = response.wind;
       // windspeed in (mph? or kph?)
-      var weatherWindSpeed = weatherWind.speed;
+      let weatherWindSpeed = weatherWind.speed;
+
+      let rawDateVal = response.dt;
 
       console.log("CurrentTemp", currentWeatherTemp);
       console.log("Humidity", weatherHumidity);
@@ -163,7 +185,16 @@ const searchCallToAPI = () =>
       console.log("City", cityName);
 
       $("#searchInput").val("");
-      resolve({ longitude, latitude });
+      resolve({
+        longitude,
+        latitude,
+        currentWeatherTemp,
+        weatherHumidity,
+        weatherWindSpeed,
+        cityName,
+        rawDateVal,
+        weatherIconVal,
+      });
     });
   });
 
@@ -219,13 +250,45 @@ const createPreviousCityList = (previousCities) => {
 // re-render + fetchlist
 const createForecastEl = () => {};
 
-const createSingleCityEl = () => {
-  $("#singleDayWeather").html();
+const createSingleCityEl = (currentData, forecastData) => {
+  $(".jumbotron").empty();
+  let activeCityName = $(".city-active");
+  let activeCityDate = $(".current-date");
+  let activeCityIcon = $(".weather-icon");
+  let currentDate = new Date(currentData.rawDateVal * 1000).toLocaleDateString(
+    "en-AU"
+  );
+  let currentWeatherIcon = weatherIconURL + currentData.weatherIconVal + ".png";
+  activeCityName.html(currentData.cityName);
+  activeCityDate.html(currentDate);
+  activeCityIcon.attr("src", currentWeatherIcon);
+
+  let temperatureText = $(".temperature-text");
+  let windText = $(".wind-text");
+  let humidityText = $(".humidity-text");
+  let uvText = $(".uv-text");
+
+  temperatureText.html(currentData.currentWeatherTemp);
+  windText.html(currentData.weatherWindSpeed);
+  humidityText.html(currentData.weatherHumidity);
+
+  uvText.html(forecastData.uvIndex);
+  if (0 <= uvIndex < 3) {
+    $(uvText).addClass("lowUV");
+  } else if (3 <= uvIndex < 6) {
+    $(uvText).addClass("medUV");
+  } else if (6 <= uvIndex < 8) {
+    $(uvText).addClass("highUV");
+  } else if (8 <= uvIndex < 11) {
+    $(uvText).addClass("veryhighUV");
+  } else {
+    $(uvText).addClass("extremeUV");
+  }
 };
 
-const renderUV = () => {};
-
 const dailyForecastRetrieval = (weatherDaily) => {
+  const forecastRow = $(".forecast-row");
+  forecastRow.empty();
   for (i = 0; i < forecastDayTarget; i++) {
     // daily main max
     let tempMax = weatherDaily[i].temp.max;
@@ -244,41 +307,49 @@ const dailyForecastRetrieval = (weatherDaily) => {
       "en-AU"
     );
 
-    console.log(formattedDates);
-    console.log(weatherIconImg);
-    console.log(tempMax);
-    console.log(tempMin);
-    console.log(dailyHumidity);
-    $("#daily" + i + "date").text(formattedDates);
-    $("#daily" + i + "image").attr("src", weatherIconImg);
-    $("#daily" + i + "tempMax").text(
-      "Max. Temp: " + tempMax + "degrees F or C"
-    );
-    $("#daily" + i + "tempMin").text(
-      "Min. Temp: " + tempMin + "degrees F or C"
-    );
-    $("#daily" + i + "humidity").text(dailyHumidity);
-    $("#daily" + i + "humidity").each(function () {
-      if (0 <= uvIndex < 3) {
-        $(this).addClass("lowUV");
-      } else if (3 <= uvIndex < 6) {
-        $(this).addClass("medUV");
-      } else if (6 <= uvIndex < 8) {
-        $(this).addClass("highUV");
-      } else if (8 <= uvIndex < 11) {
-        $(this).addClass("veryhighUV");
-      } else {
-        $(this).addClass("extremeUV");
-      }
-    });
-
+    // console.log(formattedDates);
+    // console.log(weatherIconImg);
     // console.log(tempMax);
     // console.log(tempMin);
     // console.log(dailyHumidity);
-    // console.log(weatherDaily[i]);
-    // console.log(weatherDaily[i].weather[0]);
-    // console.log(weatherDaily[i].weather[0].icon);
-    // console.log("iconURL", weatherIconImg);
+
+    let forecastCard = $("<div>");
+    forecastCard.attr("class", "col");
+
+    let forecastCard1 = $("<div>");
+    forecastCard1.attr("class", "card bg-light mb-3");
+
+    let forecastCard2 = $("<div>");
+    forecastCard2.attr("class", "card-body");
+
+    let forecastHeadingDate = $("<h5>");
+    forecastHeadingDate.text(formattedDates);
+    forecastHeadingDate.attr({
+      class: "card-title",
+      "aria-label": "forecast-date",
+    });
+    let forecastImage = $("<img>");
+    forecastImage.attr({
+      src: weatherIconImg,
+      alt: "weather-icon-image",
+    });
+    let forecastMax = $("<p>");
+    let forecastMin = $("<p>");
+    let forecastHumidity = $("<p>");
+    forecastMax.attr("class", "cardinfo cardMaxTemperature");
+    forecastMax.text("Max Temp: " + tempMax);
+    forecastMin.attr("class", "cardinfo cardMinTemperature");
+    forecastMin.text("Min Temp: " + tempMin);
+    forecastHumidity.attr("class", "cardinfo cardHumidity");
+    forecastHumidity.text("H: " + dailyHumidity + "%");
+    forecastCard2.append(forecastHeadingDate);
+    forecastCard2.append(forecastImage);
+    forecastCard2.append(forecastMax);
+    forecastCard2.append(forecastMin);
+    forecastCard2.append(forecastHumidity);
+    forecastCard1.append(forecastCard2);
+    forecastCard.append(forecastCard1);
+    forecastRow.append(forecastCard);
   }
 };
 
