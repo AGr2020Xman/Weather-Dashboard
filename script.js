@@ -58,12 +58,12 @@ const initiate = async (event) => {
     console.log(currentData);
     console.log(forecastData);
     createSingleCityEl(
-      currentData.currentWeatherTemp,
-      currentData.weatherHumidity,
-      currentData.weatherWindSpeed,
       currentData.cityName,
       currentData.rawDateVal,
       currentData.weatherIconVal,
+      currentData.currentWeatherTemp,
+      currentData.weatherWindSpeed,
+      currentData.weatherHumidity,
       forecastData.uvIndex
     );
     dailyForecastRetrieval(forecastData.weatherDaily);
@@ -273,7 +273,7 @@ const createSingleCityEl = (
   let currentDate = new Date(rawDateVal * 1000).toLocaleDateString("en-AU");
   let currentWeatherIcon = weatherIconURL + weatherIconVal + ".png";
 
-  console.log(cityName);
+  console.log(cityName, "string");
   console.log(rawDateVal);
   console.log(weatherIconVal);
   console.log(currentWeatherTemp);
@@ -297,15 +297,15 @@ const createSingleCityEl = (
 
   uvText.text(uvIndex);
   if (0 <= uvIndex < 3) {
-    $(uvText).addClass("lowUV");
+    uvText.addClass("lowUV");
   } else if (3 <= uvIndex < 6) {
-    $(uvText).addClass("medUV");
+    uvText.addClass("medUV");
   } else if (6 <= uvIndex < 8) {
-    $(uvText).addClass("highUV");
+    uvText.addClass("highUV");
   } else if (8 <= uvIndex < 11) {
-    $(uvText).addClass("veryhighUV");
+    uvText.addClass("veryhighUV");
   } else {
-    $(uvText).addClass("extremeUV");
+    uvText.addClass("extremeUV");
   }
 };
 
@@ -330,7 +330,7 @@ const dailyForecastRetrieval = (weatherDaily) => {
       "en-AU"
     );
 
-    // console.log(formattedDates);
+    // console.log(formattedDates, dailyDates);
     // console.log(weatherIconImg);
     // console.log(tempMax);
     // console.log(tempMin);
