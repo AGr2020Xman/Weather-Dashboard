@@ -147,8 +147,8 @@ const getFromLocalstorage = () => {
     return {};
   }
   let cityKeys = Object.keys(previousCities);
-  if (cityKeys.length >= 9) {
-    delete previousCities[cityKeys[0]];
+  if (cityKeys.length > 9) {
+    previousCities[cityKeys[0]];
   }
   return previousCities;
 };
@@ -187,7 +187,7 @@ const createPreviousCityList = (previousCities) => {
       let clickedCity = $(this).text();
       searchCityWeatherAPI(clickedCity);
     });
-    $("#saved-cities").append(cityEntries);
+    $("#saved-cities").prepend(cityEntries);
   }
 };
 
@@ -376,6 +376,13 @@ const dailyForecastRetrieval = (weatherDaily) => {
 const clearAllEvents = () => {
   clearLocalStorage();
   $(".forecast-row").empty();
+  $(".city-active").empty();
+  $(".current-date").empty();
+  $(".weather-icon").();
+  $(".temperature-text").empty();
+  $(".wind-text").empty();
+  $(".humidity-text").empty();
+  $(".uv-text").empty();
 };
 
 const clearLocalStorage = () => {
