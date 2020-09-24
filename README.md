@@ -42,19 +42,19 @@ Deployable link - hosted on github pages\_
 Link: https://agr2020xman.github.io/Weather-Dashboard/
 
 _Front page_
-![](Assets/landing_page)
+![](Assets/landing_page.JPG)
 
 _Forecast active_
-![](Assets/city_forecast)
+![](Assets/city_forecast.JPG)
 
 _Changing forecast units on active loaded forecast_
-![](Assets/live_imperial_change)
+![](Assets/live_imperial_change.JPG)
 
 _Searches saving (Top = most recent) + will presist on refresh_
-![](Assets/saved_searches)
+![](Assets/saved_searches.JPG)
 
 _Clear history removes all locally stored data & clears searchs_
-![](Assets/full_clear)
+![](Assets/full_clear.JPG)
 
 ### Author
 
