@@ -32,6 +32,9 @@
                 <label for="searchInput">Search for a city:</label>
                 <input id="searchInput" type="text" class="form-control" placeholder="Search city here" aria-label="Search for a city here" aria-describedby="button-addon2" id="unit-switch">
               </div>
+              <div class="flash alert alert-danger" role="alert" id="404">
+                Something went wrong. Please try again!
+              </div>
               <button type="submit" id="searchButton" class="btn btn-primary btn-sm btn-block">Search</button>
             </form>
             <button 
@@ -94,7 +97,7 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="error404">History cleared</h5>
+            <h5 class="modal-title" id="histClearedText">History cleared</h5>
             <button
               type="button"
               class="close"
@@ -112,24 +115,20 @@
               class="btn btn-secondary"
               data-dismiss="modal"
             >
-              Search for more.
+              Continue searching
             </button>
           </div>
         </div>
       </div>
     </div>
+
+   
       
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.28.0/moment.min.js"
-      integrity="sha512-Q1f3TS3vSt1jQ8AwP2OuenztnLU6LwxgyyYOG1jgMW/cbEMHps/3wjvnl1P3WTrF3chJUWEoxDUEjMxDV8pujg=="
-      crossorigin="anonymous"
-  ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
     <script src="script.js"></script>
   </body>
 </html>

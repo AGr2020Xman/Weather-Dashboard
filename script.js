@@ -28,6 +28,19 @@ let createURL2 = (latitude, longitude) => {
   );
 };
 
+// const revealError404 = () => {
+//   $("#error404Modal").modal("show");
+// };
+
+const showFeedback = (error) => {
+  let errorDetected = $("#404");
+
+  // flash error message
+  if (error) {
+    errorDetected.show().fadeOut(2500);
+  }
+};
+
 const searchCityWeatherAPI = async (searchName) => {
   searchName = searchName.toLowerCase().trim();
   $("#searchInput").val("");
@@ -43,9 +56,7 @@ const searchCityWeatherAPI = async (searchName) => {
     renderCurrentCityEl(currentData, forecastData.uvIndex);
     dailyForecastRetrieval(forecastData.weatherDaily);
   } catch (error) {
-    if (error === 404) {
-      alert("Error 404: Please try again");
-    }
+    showFeedback(error);
   }
 };
 
@@ -57,6 +68,8 @@ const searchCityButton = (event) => {
 };
 
 $(document).ready(function () {
+  let errorDetected = $("#404");
+  errorDetected.hide();
   let previousCities = getFromLocalstorage();
   createPreviousCityList(previousCities);
   let lastSearchedCity = Object.keys(previousCities).pop();
@@ -71,23 +84,14 @@ const oneAPICall = (latitude, longitude) =>
     $.ajax({
       url: createURL2(latitude, longitude),
       method: "GET",
-      statusCode: {
-        404: function () {
-          alert(
-            "Error 404 - the coordinates could not be saved. Please try again."
-          );
-        },
-      },
-    })
-      .then(function (response) {
-        // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
-        let uvIndex = response.current.uvi;
-        // daily weather in SECOND api call -
-        let weatherDaily = response.daily;
+    }).then(function (response) {
+      // uv index value (green0-2, yellow3-5, orange6-7, red8-10, violet11+)
+      let uvIndex = response.current.uvi;
+      // daily weather in SECOND api call -
+      let weatherDaily = response.daily;
 
-        resolve({ weatherDaily, uvIndex });
-      })
-      .then();
+      resolve({ weatherDaily, uvIndex });
+    });
   });
 
 const searchCallToAPI = (cityInput) =>
@@ -96,48 +100,47 @@ const searchCallToAPI = (cityInput) =>
     $.ajax({
       url: currentWeatherURL(cityInput),
       method: "GET",
-      statusCode: {
-        404: function () {
-          alert("Error 404 - please try again");
-        },
-      },
-    }).then((response) => {
-      let cityName = response.name;
-      // in Kelvin - (toggle F<>C)
-      let weatherStats = response.main;
-      let currentWeatherTemp = weatherStats.temp;
-      let weatherHumidity = weatherStats.humidity;
-      // root ARRAY
-      let weatherCall = response.weather;
+    })
+      .then((response) => {
+        let cityName = response.name;
+        // in Kelvin - (toggle F<>C)
+        let weatherStats = response.main;
+        let currentWeatherTemp = weatherStats.temp;
+        let weatherHumidity = weatherStats.humidity;
+        // root ARRAY
+        let weatherCall = response.weather;
 
-      // (.png)
-      let weatherIconVal = weatherCall[0].icon;
+        // (.png)
+        let weatherIconVal = weatherCall[0].icon;
 
-      // access coords
-      let weatherCoord = response.coord;
+        // access coords
+        let weatherCoord = response.coord;
 
-      let longitude = weatherCoord.lon;
+        let longitude = weatherCoord.lon;
 
-      let latitude = weatherCoord.lat;
+        let latitude = weatherCoord.lat;
 
-      // open wind obj
-      let weatherWind = response.wind;
-      // windspeed in (mph? or kph?)
-      let weatherWindSpeed = weatherWind.speed;
+        // open wind obj
+        let weatherWind = response.wind;
+        // windspeed in (mph? or kph?)
+        let weatherWindSpeed = weatherWind.speed;
 
-      let rawDateVal = response.dt;
+        let rawDateVal = response.dt;
 
-      resolve({
-        longitude,
-        latitude,
-        currentWeatherTemp,
-        weatherHumidity,
-        weatherWindSpeed,
-        cityName,
-        rawDateVal,
-        weatherIconVal,
+        resolve({
+          longitude,
+          latitude,
+          currentWeatherTemp,
+          weatherHumidity,
+          weatherWindSpeed,
+          cityName,
+          rawDateVal,
+          weatherIconVal,
+        });
+      })
+      .fail(function (error) {
+        reject(error);
       });
-    });
   });
 
 const getFromLocalstorage = () => {
@@ -148,7 +151,7 @@ const getFromLocalstorage = () => {
   }
   let cityKeys = Object.keys(previousCities);
   if (cityKeys.length > 9) {
-    previousCities[cityKeys[0]];
+    delete previousCities[cityKeys[0]];
   }
   return previousCities;
 };
@@ -378,7 +381,7 @@ const clearAllEvents = () => {
   $(".forecast-row").empty();
   $(".city-active").empty();
   $(".current-date").empty();
-  $(".weather-icon").();
+  $(".weather-icon").attr("src", "");
   $(".temperature-text").empty();
   $(".wind-text").empty();
   $(".humidity-text").empty();
