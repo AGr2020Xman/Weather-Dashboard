@@ -51,6 +51,7 @@ _Changing forecast units on active loaded forecast_
 ![](Assets/live_imperial_change.JPG)
 
 _Searches saving (Top = most recent) + will presist on refresh_
+
 ![](Assets/saved_searches.JPG)
 
 _Clear history removes all locally stored data & clears searchs_
