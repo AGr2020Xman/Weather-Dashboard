@@ -1,8 +1,6 @@
 # 06 Server-Side APIs: Weather Dashboard
 
-Developers are often tasked with retrieving data from another application's API and using it in the context of their own. Third-party APIs allow developers to access their data and functionality by making requests with specific parameters to a URL. Your challenge is to build a weather dashboard that will run in the browser and feature dynamically updated HTML and CSS.
-
-Use the [OpenWeather API](https://openweathermap.org/api) to retrieve weather data for cities. The documentation includes a section called "How to start" that will provide basic setup and usage instructions. Use `localStorage` to store any persistent data.
+Developers are often tasked with retrieving data from another application's API and using it in the context of their own. Third-party APIs allow developers to access their data and functionality by making requests with specific parameters to a URL. My given challenge is to build a weather dashboard that will run in the browser and feature dynamically updated HTML and CSS.
 
 ## User Story
 
@@ -30,17 +28,38 @@ WHEN I open the weather dashboard
 THEN I am presented with the last searched city forecast
 ```
 
-The following image demonstrates the application functionality:
+## Code
 
-![weather dashboard demo](./Assets/06-server-side-apis-homework-demo.png)
+- Uses the [OpenWeather API](https://openweathermap.org/api) to retrieve weather data for cities.
+- Working towards following SOLID principles.
+- Allows for metric units to change based on user choice.
+- Primary functions handled by script.js. Some internal HTML targeting using bootstraps modal framework.
+- Mixed custom CSS and bootstrap framework
 
-## Review
+## Demonstation
 
-You are required to submit the following for review:
+Deployable link - hosted on github pages\_
+Link: https://agr2020xman.github.io/Weather-Dashboard/
 
-* The URL of the deployed application.
+_Front page_
+![](Assets/landing_page)
 
-* The URL of the GitHub repository. Give the repository a unique name and include a README describing the project.
+_Forecast active_
+![](Assets/city_forecast)
 
-- - -
+_Changing forecast units on active loaded forecast_
+![](Assets/live_imperial_change)
+
+_Searches saving (Top = most recent) + will presist on refresh_
+![](Assets/saved_searches)
+
+_Clear history removes all locally stored data & clears searchs_
+![](Assets/full_clear)
+
+### Author
+
+- Code from scratch by Andr&eacute; Grech - 24/09/2020
+
+---
+
 © 2019 Trilogy Education Services, a 2U, Inc. brand. All Rights Reserved.
