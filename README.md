@@ -38,7 +38,7 @@ THEN I am presented with the last searched city forecast
 
 ## Demonstation
 
-Deployable link - hosted on github pages\_
+Deployable link - hosted on github pages.
 Link: https://agr2020xman.github.io/Weather-Dashboard/
 
 _Front page_
