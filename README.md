@@ -1,6 +1,6 @@
 # 06 Server-Side APIs: Weather Dashboard
 
-Developers are often tasked with retrieving data from another application's API and using it in the context of their own. Third-party APIs allow developers to access their data and functionality by making requests with specific parameters to a URL. My given challenge is to build a weather dashboard that will run in the browser and feature dynamically updated HTML and CSS.
+Developers are often tasked with retrieving data from another application's API and using it in the context of their own. Third-party APIs allow developers to access their data and functionality by making requests with specific parameters to a URL. My given challenge is to build a weather dashboard that will run in the browser and feature dynamically updated HTML and CSS displaying forecasts for the searched city, and saving those searches. 
 
 ## User Story
 
@@ -61,6 +61,18 @@ _Clear history removes all locally stored data & clears searchs_
 
 - Code from scratch by Andr&eacute; Grech - 24/09/2020
 
----
+#### Tools 
 
-© 2019 Trilogy Education Services, a 2U, Inc. brand. All Rights Reserved.
+- [OpenWeatherAPI](https://openweathermap.org/api)
+- [VScode](https://code.visualstudio.com/) - The editor of choice.
+- [jQuery](https://api.jquery.com/)
+- [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML)
+- [Bootstrap](https://getbootstrap.com/)
+
+#### License
+
+- [MIT License](https://opensource.org/licenses/MIT)
+
+#### Acknowledgments
+
+- © 2019 Trilogy Education Services, a 2U, Inc. brand. All Rights Reserved.
