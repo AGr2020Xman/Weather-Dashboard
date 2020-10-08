@@ -66,7 +66,6 @@ _Clear history removes all locally stored data & clears searchs_
 - [OpenWeatherAPI](https://openweathermap.org/api)
 - [VScode](https://code.visualstudio.com/) - The editor of choice.
 - [jQuery](https://api.jquery.com/)
-- [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML)
 - [Bootstrap](https://getbootstrap.com/)
 
 #### License
