@@ -36,7 +36,7 @@ THEN I am presented with the last searched city forecast
 - Primary functions handled by script.js. Some internal HTML targeting using bootstraps modal framework.
 - Mixed custom CSS and bootstrap framework
 
-## Demonstation
+## Demonstration
 
 Deployable link - hosted on github pages.
 Link: https://agr2020xman.github.io/Weather-Dashboard/
